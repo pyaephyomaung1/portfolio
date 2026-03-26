@@ -65,6 +65,15 @@ const App = () => {
     },
   ];
 
+  type LightStreak = {
+    x: number;
+    y: number;
+    direction: "horizontal" | "vertical";
+    progress: number;
+    speed: number;
+    length: number;
+    active: boolean;
+  };
   // Animated white light streaks along grid lines
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -76,20 +85,12 @@ const App = () => {
     let animationFrameId: number;
 
     // Light streak objects
-    let lightStreaks: Array<{
-      x: number;
-      y: number;
-      direction: "horizontal" | "vertical";
-      progress: number;
-      speed: number;
-      length: number;
-      active: boolean;
-    }> = [];
+    let lightStreaks: LightStreak[] = [];
 
     const GRID_SIZE = 40;
 
     const initLightStreaks = () => {
-      const streaks = [];
+      const streaks: LightStreak[] = [];
       const numHorizontal = Math.ceil(canvas.height / GRID_SIZE) * 1.5;
       const numVertical = Math.ceil(canvas.width / GRID_SIZE) * 1.5;
 
