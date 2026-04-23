@@ -10,61 +10,36 @@ import {
   ShoppingCart,
   Terminal,
   ChevronRight,
+  ArrowUpRight,
 } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const App = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [hoveredProject, setHoveredProject] = useState<number | null>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [cursorVariant, setCursorVariant] = useState("default");
+
+  // Custom cursor tracking
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   const skills = [
-    // Backend
-    {
-      name: "Express.js",
-      category: "Backend",
-      icon: <Server className="w-4 h-4" />,
-    },
-    {
-      name: "NestJS",
-      category: "Backend",
-      icon: <Server className="w-4 h-4" />,
-    },
-    {
-      name: "Go",
-      category: "Backend (Learning)",
-      icon: <Server className="w-4 h-4" />,
-    },
-    {
-      name: "REST API",
-      category: "Backend",
-      icon: <Database className="w-4 h-4" />,
-    },
-
-    // Frontend
-    {
-      name: "React / Vite",
-      category: "Frontend",
-      icon: <Code2 className="w-4 h-4" />,
-    },
-    {
-      name: "Next.js",
-      category: "Frontend",
-      icon: <Layers className="w-4 h-4" />,
-    },
-    {
-      name: "TypeScript",
-      category: "Language",
-      icon: <Code2 className="w-4 h-4" />,
-    },
-    {
-      name: "Tailwind CSS",
-      category: "Styling",
-      icon: <Layers className="w-4 h-4" />,
-    },
-    {
-      name: "Git",
-      category: "Version Control",
-      icon: <Code2 className="w-4 h-4" />,
-    },
+    { name: "Express.js", category: "Backend", icon: <Server className="w-4 h-4" /> },
+    { name: "NestJS", category: "Backend", icon: <Server className="w-4 h-4" /> },
+    { name: "Go", category: "Backend (Learning)", icon: <Server className="w-4 h-4" /> },
+    { name: "REST API", category: "Backend", icon: <Database className="w-4 h-4" /> },
+    { name: "React / Vite", category: "Frontend", icon: <Code2 className="w-4 h-4" /> },
+    { name: "Next.js", category: "Frontend", icon: <Layers className="w-4 h-4" /> },
+    { name: "TypeScript", category: "Language", icon: <Code2 className="w-4 h-4" /> },
+    { name: "Tailwind CSS", category: "Styling", icon: <Layers className="w-4 h-4" /> },
+    { name: "Git", category: "Version Control", icon: <Code2 className="w-4 h-4" /> },
   ];
 
   const projects = [
@@ -86,17 +61,9 @@ const App = () => {
       metrics: "Optimized Search Logic",
       icon: <Search className="w-5 h-5" />,
     },
-    // {
-    //   title: "Jenny",
-    //   url: "https://imjenny.net",
-    //   description:
-    //     "A comprehensive portfolio and service hub for a creative talent. Curates and showcases high-impact social media designs, engaging video content, and strategic service storytelling to elevate brand presence.",
-    //   tags: ["React/Vite", "UI/UX"],
-    //   metrics: "Creative Direction & Content",
-    //   icon: <Sparkles className="w-5 h-5" />,
-    // },
   ];
 
+  // Light streaks animation (keeping your existing code)
   type LightStreak = {
     x: number;
     y: number;
@@ -106,7 +73,7 @@ const App = () => {
     length: number;
     active: boolean;
   };
-  // Animated white light streaks along grid lines
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -115,10 +82,7 @@ const App = () => {
     if (!ctx) return;
 
     let animationFrameId: number;
-
-    // Light streak objects
     let lightStreaks: LightStreak[] = [];
-
     const GRID_SIZE = 40;
 
     const initLightStreaks = () => {
@@ -126,7 +90,6 @@ const App = () => {
       const numHorizontal = Math.ceil(canvas.height / GRID_SIZE) * 1.5;
       const numVertical = Math.ceil(canvas.width / GRID_SIZE) * 1.5;
 
-      // Create horizontal streaks (moving left to right)
       for (let i = 0; i < numHorizontal; i++) {
         const y = Math.random() * canvas.height;
         streaks.push({
@@ -140,7 +103,6 @@ const App = () => {
         });
       }
 
-      // Create vertical streaks (moving top to bottom)
       for (let i = 0; i < numVertical; i++) {
         const x = Math.random() * canvas.width;
         streaks.push({
@@ -165,7 +127,6 @@ const App = () => {
       ctx.strokeStyle = "rgba(128, 128, 128, 0.08)";
       ctx.lineWidth = 0.5;
 
-      // Draw vertical lines
       for (let x = 0; x <= width; x += GRID_SIZE) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
@@ -173,7 +134,6 @@ const App = () => {
         ctx.stroke();
       }
 
-      // Draw horizontal lines
       for (let y = 0; y <= height; y += GRID_SIZE) {
         ctx.beginPath();
         ctx.moveTo(0, y);
@@ -185,65 +145,44 @@ const App = () => {
     const drawLightStreaks = () => {
       for (let i = 0; i < lightStreaks.length; i++) {
         const streak = lightStreaks[i];
-
-        // Update progress
         streak.progress += streak.speed;
 
-        // Reset if finished
         if (streak.progress >= 1) {
           streak.progress = 0;
-          // Randomize new position
           if (streak.direction === "horizontal") {
             streak.y = Math.random() * canvas.height;
           } else {
             streak.x = Math.random() * canvas.width;
           }
-          // Randomize speed slightly
           streak.speed = 0.001 + Math.random() * 0.002;
-          // Randomize length
           streak.length = 80 + Math.random() * 120;
         }
 
-        // Calculate position
         let startX, startY, endX, endY;
-        // Very low opacity for subtle effect
         const alpha = Math.sin(streak.progress * Math.PI) * 0.15;
 
         if (streak.direction === "horizontal") {
-          const startProgress = Math.max(
-            0,
-            streak.progress - streak.length / canvas.width,
-          );
+          const startProgress = Math.max(0, streak.progress - streak.length / canvas.width);
           const endProgress = streak.progress;
-
           startX = startProgress * canvas.width;
           endX = endProgress * canvas.width;
           startY = streak.y;
           endY = streak.y;
-
-          // Snap to nearest grid line for better alignment
           const gridY = Math.round(streak.y / GRID_SIZE) * GRID_SIZE;
           startY = gridY;
           endY = gridY;
         } else {
-          const startProgress = Math.max(
-            0,
-            streak.progress - streak.length / canvas.height,
-          );
+          const startProgress = Math.max(0, streak.progress - streak.length / canvas.height);
           const endProgress = streak.progress;
-
           startX = streak.x;
           endX = streak.x;
           startY = startProgress * canvas.height;
           endY = endProgress * canvas.height;
-
-          // Snap to nearest grid line
           const gridX = Math.round(streak.x / GRID_SIZE) * GRID_SIZE;
           startX = gridX;
           endX = gridX;
         }
 
-        // Draw the light streak with white gradient at low opacity
         const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
         gradient.addColorStop(0, `rgba(255, 255, 255, 0)`);
         gradient.addColorStop(0.3, `rgba(255, 255, 255, ${alpha * 0.6})`);
@@ -258,19 +197,11 @@ const App = () => {
         ctx.lineWidth = 1.5 + Math.sin(streak.progress * Math.PI) * 1;
         ctx.stroke();
 
-        // Draw subtle glowing core at the head
         ctx.beginPath();
-        ctx.arc(
-          endX,
-          endY,
-          2 + Math.sin(streak.progress * Math.PI * 4) * 0.5,
-          0,
-          Math.PI * 2,
-        );
+        ctx.arc(endX, endY, 2 + Math.sin(streak.progress * Math.PI * 4) * 0.5, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.8})`;
         ctx.fill();
 
-        // Add very subtle glow effect
         ctx.beginPath();
         ctx.arc(endX, endY, 4, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.3})`;
@@ -286,17 +217,14 @@ const App = () => {
 
     const animate = () => {
       if (!ctx || !canvas) return;
-
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawGrid();
       drawLightStreaks();
-
       animationFrameId = requestAnimationFrame(animate);
     };
 
     resizeCanvas();
     animate();
-
     window.addEventListener("resize", resizeCanvas);
 
     return () => {
@@ -307,196 +235,329 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-black text-slate-300 font-mono selection:bg-blue-500/30 relative overflow-hidden">
-      {/* Canvas for animated white light streaks */}
-      <canvas
-        ref={canvasRef}
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{ opacity: 0.5 }}
+      {/* Custom Cursor - Hide on mobile */}
+      <motion.div
+        className="fixed w-8 h-8 border-2 border-blue-500 rounded-full pointer-events-none z-50 hidden lg:block"
+        animate={{
+          x: mousePosition.x - 16,
+          y: mousePosition.y - 16,
+          scale: cursorVariant === "hover" ? 1.5 : 1,
+          opacity: cursorVariant === "hover" ? 0.8 : 0.5,
+        }}
+        transition={{ type: "spring", stiffness: 500, damping: 28 }}
+      />
+      <motion.div
+        className="fixed w-2 h-2 bg-blue-500 rounded-full pointer-events-none z-50 hidden lg:block"
+        animate={{
+          x: mousePosition.x - 4,
+          y: mousePosition.y - 4,
+        }}
+        transition={{ type: "spring", stiffness: 1000, damping: 28 }}
       />
 
-      {/* Additional subtle glow overlay */}
+      {/* Canvas for animated white light streaks */}
+      <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" style={{ opacity: 0.5 }} />
       <div className="fixed inset-0 bg-linear-to-b from-transparent via-white/5 to-transparent pointer-events-none z-0" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 py-12">
         {/* Header */}
-        <nav className="flex justify-between items-center mb-24 border-b border-white/5 pb-8">
+        <motion.nav
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="flex justify-between items-center mb-24 border-b border-white/5 pb-8"
+        >
           <div className="flex items-center gap-4">
             <span className="text-white font-bold tracking-widest text-sm inline-flex items-center gap-2">
               <Terminal className="w-4 h-4" /> PYAE PHYO MAUNG
             </span>
           </div>
           <div className="flex gap-6 text-xs font-medium uppercase tracking-widest">
-            <a
-              href="https://github.com/pyaephyomaung1"
-              target="_blank"
-              className="hover:text-white transition-colors"
-            >
-              GitHub
-            </a>
-            <a
-              href="mailto:pyaephyomg.ppm06@gmail.com"
-              className="hover:text-white transition-colors"
-            >
-              Email
-            </a>
+            {["GitHub", "Email"].map((item, idx) => (
+              <motion.a
+                key={item}
+                href={item === "GitHub" ? "https://github.com/pyaephyomaung1" : "mailto:pyaephyomg.ppm06@gmail.com"}
+                target="_blank"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.2 + idx * 0.1 }}
+                whileHover={{ scale: 1.1, color: "#ffffff" }}
+                whileTap={{ scale: 0.95 }}
+                className="hover:text-white transition-colors"
+                onHoverStart={() => setCursorVariant("hover")}
+                onHoverEnd={() => setCursorVariant("default")}
+              >
+                {item}
+              </motion.a>
+            ))}
           </div>
-        </nav>
+        </motion.nav>
 
         {/* Hero Section */}
-        <section className="mb-32">
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-32"
+        >
           <div className="max-w-3xl">
-            <div className="flex items-center gap-2 text-blue-500 mb-6 font-bold text-xs tracking-widest uppercase">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="flex items-center gap-2 text-blue-500 mb-6 font-bold text-xs tracking-widest uppercase"
+            >
+              <motion.span
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="w-1.5 h-1.5 bg-blue-500 rounded-full"
+              />
               <span>Web Developer</span>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tighter leading-none">
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tighter leading-none"
+            >
               I build <span className="text-slate-500">fast RESTful APIs</span>{" "}
               & modern web applications.
-            </h1>
-            <p className="text-lg text-slate-400 mb-10 leading-relaxed font-sans max-w-2xl">
-              Web Developer with 1+ year of experience. Specialize in
-              Express.js, NestJS, and React/Next.js. Currently learning Go to
-              build even faster backends.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <a
-                href="#projects"
-                className="px-6 py-3 bg-white text-black text-xs font-bold uppercase rounded-sm hover:bg-slate-200 transition-all flex items-center gap-2"
-              >
-                View Work <ChevronRight className="w-4 h-4" />
-              </a>
-              <a
-                href="mailto:pyaephyomg.ppm06@gmail.com"
-                className="px-6 py-3 border border-white/10 text-white text-xs font-bold uppercase rounded-sm hover:bg-white/5 transition-all"
-              >
-                Hire Me
-              </a>
-              {/* Add this new button */}
-              <a
-                href={cvFile}
-                download="Pyae_Phyo_Maung_CV.pdf"
-                className="px-6 py-3 border border-white/10 text-white text-xs font-bold uppercase rounded-sm hover:bg-white/5 transition-all flex items-center gap-2"
-              >
-                Download CV
-              </a>
-            </div>
-          </div>
-        </section>
+            </motion.h1>
 
-        {/* Technical Stack - Minimal Grid */}
-        <section className="mb-32">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-lg text-slate-400 mb-10 leading-relaxed font-sans max-w-2xl"
+            >
+              Web Developer with 1+ year of experience. Specialize in Express.js, NestJS, 
+              and React/Next.js. Currently learning Go to build even faster backends.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="flex flex-wrap gap-4"
+            >
+              {[
+                { text: "View Work", href: "#projects", icon: <ChevronRight className="w-4 h-4" />, primary: true },
+                { text: "Hire Me", href: "mailto:pyaephyomg.ppm06@gmail.com", icon: null, primary: false },
+                { text: "Download CV", href: cvFile, icon: null, primary: false, download: true },
+              ].map((btn, idx) => (
+                <motion.a
+                  key={btn.text}
+                  href={btn.href}
+                  download={btn.download}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onHoverStart={() => setCursorVariant("hover")}
+                  onHoverEnd={() => setCursorVariant("default")}
+                  className={`px-6 py-3 text-xs font-bold uppercase rounded-sm transition-all flex items-center gap-2 ${
+                    btn.primary
+                      ? "bg-white text-black hover:bg-slate-200"
+                      : "border border-white/10 text-white hover:bg-white/5"
+                  }`}
+                >
+                  {btn.text} {btn.icon}
+                </motion.a>
+              ))}
+            </motion.div>
+          </div>
+        </motion.section>
+
+        {/* Technical Stack - No hover effects or animations */}
+        <motion.section
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="mb-32"
+        >
           <h2 className="text-xs font-bold text-slate-500 uppercase tracking-[0.3em] mb-12 flex items-center gap-4">
             Technical Stack <span className="h-px flex-1 bg-white/5"></span>
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-px bg-white/5 border border-white/5">
-            {skills.map((skill) => (
-              <div
+            {skills.map((skill, idx) => (
+              <motion.div
                 key={skill.name}
-                className="bg-[#0a0a0b] p-8 flex flex-col gap-4 group hover:bg-white/2 transition-colors relative overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.05 }}
+                className="bg-[#0a0a0b] p-8 flex flex-col gap-4 transition-colors duration-300"
               >
                 <div className="text-white opacity-40 group-hover:opacity-100 transition-opacity">
                   {skill.icon}
                 </div>
                 <div>
-                  <div className="text-white text-sm font-bold mb-1">
-                    {skill.name}
-                  </div>
+                  <div className="text-white text-sm font-bold mb-1">{skill.name}</div>
                   <div className="text-slate-600 text-[10px] uppercase tracking-widest font-bold">
                     {skill.category}
                   </div>
                 </div>
-                {/* Hover glow effect */}
-                <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-              </div>
+              </motion.div>
             ))}
           </div>
-        </section>
+        </motion.section>
 
-        {/* Projects - List Style */}
-        <section id="projects" className="mb-32">
+        {/* Projects with hover effects */}
+        <motion.section
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          id="projects"
+          className="mb-32"
+        >
           <h2 className="text-xs font-bold text-slate-500 uppercase tracking-[0.3em] mb-12 flex items-center gap-4">
             Production Work <span className="h-px flex-1 bg-white/5"></span>
           </h2>
           <div className="space-y-6">
-            {projects.map((project, idx) => (
-              <div
-                key={idx}
-                className="group relative border border-white/5 bg-white/1 p-8 md:p-12 rounded-sm hover:border-white/20 transition-all"
-              >
-                <div className="flex flex-col md:flex-row justify-between gap-8">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="text-blue-500">{project.icon}</span>
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                        {project.metrics}
-                      </span>
-                    </div>
-                    <h3 className="text-2xl font-bold text-white mb-4 tracking-tight group-hover:text-blue-400 transition-colors">
-                      {project.title}
-                    </h3>
-                    <p className="text-slate-400 mb-8 font-sans leading-relaxed max-w-xl">
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-3">
-                      {project.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-[10px] px-2 py-1 bg-white/5 text-slate-400 rounded-sm font-bold uppercase"
-                        >
-                          {tag}
+            <AnimatePresence>
+              {projects.map((project, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  whileHover={{ scale: 1.01 }}
+                  onHoverStart={() => {
+                    setHoveredProject(idx);
+                    setCursorVariant("hover");
+                  }}
+                  onHoverEnd={() => {
+                    setHoveredProject(null);
+                    setCursorVariant("default");
+                  }}
+                  className="group relative border border-white/5 bg-white/1 p-8 md:p-12 rounded-sm transition-all duration-300 cursor-pointer"
+                  style={{
+                    borderColor: hoveredProject === idx ? "rgba(59, 130, 246, 0.5)" : "rgba(255,255,255,0.05)",
+                    boxShadow: hoveredProject === idx ? "0 0 30px rgba(59, 130, 246, 0.1)" : "none",
+                  }}
+                >
+                  <div className="flex flex-col md:flex-row justify-between gap-8">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="text-blue-500">{project.icon}</span>
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                          {project.metrics}
                         </span>
-                      ))}
+                      </div>
+                      <h3 className="text-2xl font-bold text-white mb-4 tracking-tight transition-colors duration-300">
+                        {project.title}
+                      </h3>
+                      <p className="text-slate-400 mb-8 font-sans leading-relaxed max-w-xl transition-all duration-300">
+                        {project.description}
+                      </p>
+                      <div className="flex flex-wrap gap-3">
+                        {project.tags.map((tag, tagIdx) => (
+                          <motion.span
+                            key={tag}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.3, delay: tagIdx * 0.05 }}
+                            whileHover={{ scale: 1.1, backgroundColor: "rgba(59, 130, 246, 0.2)" }}
+                            className="text-[10px] px-2 py-1 bg-white/5 text-slate-400 rounded-sm font-bold uppercase transition-all duration-300 cursor-pointer"
+                          >
+                            {tag}
+                          </motion.span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-between items-end">
+                      <motion.a
+                        href={project.url}
+                        target="_blank"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="p-4 border border-white/10 rounded-sm hover:bg-white hover:text-black transition-all"
+                      >
+                        <ExternalLink className="w-5 h-5" />
+                      </motion.a>
+                      <motion.a
+                        href={project.url}
+                        target="_blank"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: hoveredProject === idx ? 1 : 0 }}
+                        className="hidden md:block text-[10px] font-bold uppercase tracking-widest text-blue-500 hover:text-white transition-colors"
+                      >
+                        Live Preview <ArrowUpRight className="w-3 h-3 inline" />
+                      </motion.a>
                     </div>
                   </div>
-                  <div className="flex flex-col justify-between items-end">
-                    <a
-                      href={project.url}
-                      target="_blank"
-                      className="p-4 border border-white/10 rounded-sm hover:bg-white hover:text-black transition-all"
-                    >
-                      <ExternalLink className="w-5 h-5" />
-                    </a>
-                    <a
-                      href={project.url}
-                      target="_blank"
-                      className="hidden md:block text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
-                    >
-                      Live Preview _
-                    </a>
-                  </div>
-                </div>
-                {/* Subtle border glow on hover */}
-                <div className="absolute inset-0 border border-white/0 group-hover:border-white/20 rounded-sm transition-all pointer-events-none" />
-              </div>
-            ))}
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: hoveredProject === idx ? 1 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-blue-500 via-purple-500 to-transparent"
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
-        </section>
+        </motion.section>
 
-        {/* Footer / Contact */}
-        <footer className="border-t border-white/5 pt-24 pb-12">
+        {/* Footer */}
+        <motion.footer
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="border-t border-white/5 pt-24 pb-12"
+        >
           <div className="grid md:grid-cols-2 gap-12">
             <div>
-              <h3 className="text-xl font-bold text-white mb-4 tracking-tight">
+              <motion.h3
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-xl font-bold text-white mb-4 tracking-tight"
+              >
                 Looking for new challenges.
-              </h3>
-              <p className="text-slate-500 text-sm font-sans mb-8">
-                Currently open to junior/mid fullstack roles specializing in Go
-                and the React ecosystem.
-              </p>
-              <div className="flex gap-4">
-                <a
+              </motion.h3>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="text-slate-500 text-sm font-sans mb-8"
+              >
+                Currently open to junior/mid fullstack roles specializing in Go and the React ecosystem.
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="flex gap-4"
+              >
+                <motion.a
                   href="mailto:pyaephyomg.ppm06@gmail.com"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onHoverStart={() => setCursorVariant("hover")}
+                  onHoverEnd={() => setCursorVariant("default")}
                   className="px-6 py-3 bg-white text-black text-[10px] font-black uppercase rounded-sm hover:bg-slate-200 transition-all"
                 >
                   Contact Me
-                </a>
-              </div>
+                </motion.a>
+              </motion.div>
             </div>
-            <div className="flex flex-col justify-end items-end gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-600">
-              <p>Pyae Phyo Maung — 2024</p>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="flex flex-col justify-end items-end gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-600"
+            >
+              <p>Pyae Phyo Maung — {new Date().getFullYear()}</p>
               <p className="text-slate-800">Designed for performance</p>
-            </div>
+            </motion.div>
           </div>
-        </footer>
+        </motion.footer>
       </div>
     </div>
   );
