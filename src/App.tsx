@@ -345,7 +345,7 @@ const App = () => {
                 { text: "View Work", href: "#projects", icon: <ChevronRight className="w-4 h-4" />, primary: true },
                 { text: "Hire Me", href: "mailto:pyaephyomg.ppm06@gmail.com", icon: null, primary: false },
                 { text: "Download CV", href: cvFile, icon: null, primary: false, download: true },
-              ].map((btn, idx) => (
+              ].map((btn) => (
                 <motion.a
                   key={btn.text}
                   href={btn.href}
