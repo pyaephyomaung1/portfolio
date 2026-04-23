@@ -10,7 +10,6 @@ import {
   ShoppingCart,
   Terminal,
   ChevronRight,
-  Sparkles,
 } from "lucide-react";
 import { useEffect, useRef } from "react";
 
