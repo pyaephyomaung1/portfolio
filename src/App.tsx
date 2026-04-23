@@ -1,3 +1,4 @@
+import cvFile from "./assets/ppm_cv.pdf";
 import "./App.css";
 import {
   ExternalLink,
@@ -9,6 +10,7 @@ import {
   ShoppingCart,
   Terminal,
   ChevronRight,
+  Sparkles,
 } from "lucide-react";
 import { useEffect, useRef } from "react";
 
@@ -16,20 +18,38 @@ const App = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const skills = [
+    // Backend
     {
-      name: "Go / Gin",
+      name: "Express.js",
       category: "Backend",
       icon: <Server className="w-4 h-4" />,
     },
     {
-      name: "GORM",
+      name: "NestJS",
+      category: "Backend",
+      icon: <Server className="w-4 h-4" />,
+    },
+    {
+      name: "Go",
+      category: "Backend (Learning)",
+      icon: <Server className="w-4 h-4" />,
+    },
+    {
+      name: "REST API",
       category: "Backend",
       icon: <Database className="w-4 h-4" />,
     },
+
+    // Frontend
     {
-      name: "PostgreSQL",
-      category: "Database",
-      icon: <Database className="w-4 h-4" />,
+      name: "React / Vite",
+      category: "Frontend",
+      icon: <Code2 className="w-4 h-4" />,
+    },
+    {
+      name: "Next.js",
+      category: "Frontend",
+      icon: <Layers className="w-4 h-4" />,
     },
     {
       name: "TypeScript",
@@ -37,11 +57,15 @@ const App = () => {
       icon: <Code2 className="w-4 h-4" />,
     },
     {
-      name: "React / Next.js",
-      category: "Frontend",
+      name: "Tailwind CSS",
+      category: "Styling",
       icon: <Layers className="w-4 h-4" />,
     },
-    { name: "Tailwind", category: "CSS", icon: <Layers className="w-4 h-4" /> },
+    {
+      name: "Git",
+      category: "Version Control",
+      icon: <Code2 className="w-4 h-4" />,
+    },
   ];
 
   const projects = [
@@ -49,8 +73,8 @@ const App = () => {
       title: "Sipman",
       url: "https://www.sipman.asia/",
       description:
-        "E-commerce platform for premium wine. Focused on high-concurrency e-commerce logic and backend performance optimization using Go.",
-      tags: ["Go", "Gin", "Next.js", "PostgreSQL"],
+        "Digital beverage-management platform for HORECA businesses: real-time inventory tracking, digital/printable beverage menus, and supplier workflow — built for wine bars, restaurants and retail shops. Powered by a scalable backend and analytics-driven ordering tools.",
+      tags: ["TypeScript", "Node", "NextJS", "PostgreSQL"],
       metrics: "High Concurrency Handling",
       icon: <ShoppingCart className="w-5 h-5" />,
     },
@@ -59,10 +83,19 @@ const App = () => {
       url: "https://shwekhitestate.com/",
       description:
         "Real estate marketplace. Architected RESTful APIs and implemented complex search logic to handle large-scale property listings.",
-      tags: ["Next.js", "TypeScript", "REST API", "GORM"],
+      tags: ["Go", "Gin", "REST API", "NextJS"],
       metrics: "Optimized Search Logic",
       icon: <Search className="w-5 h-5" />,
     },
+    // {
+    //   title: "Jenny",
+    //   url: "https://imjenny.net",
+    //   description:
+    //     "A comprehensive portfolio and service hub for a creative talent. Curates and showcases high-impact social media designs, engaging video content, and strategic service storytelling to elevate brand presence.",
+    //   tags: ["React/Vite", "UI/UX"],
+    //   metrics: "Creative Direction & Content",
+    //   icon: <Sparkles className="w-5 h-5" />,
+    // },
   ];
 
   type LightStreak = {
@@ -283,14 +316,14 @@ const App = () => {
       />
 
       {/* Additional subtle glow overlay */}
-      <div className="fixed inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent pointer-events-none z-0" />
+      <div className="fixed inset-0 bg-linear-to-b from-transparent via-white/5 to-transparent pointer-events-none z-0" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 py-12">
         {/* Header */}
         <nav className="flex justify-between items-center mb-24 border-b border-white/5 pb-8">
           <div className="flex items-center gap-4">
-            <span className="text-white font-bold tracking-widest text-sm">
-              PYAE PHYO MAUNG
+            <span className="text-white font-bold tracking-widest text-sm inline-flex items-center gap-2">
+              <Terminal className="w-4 h-4" /> PYAE PHYO MAUNG
             </span>
           </div>
           <div className="flex gap-6 text-xs font-medium uppercase tracking-widest">
@@ -314,31 +347,37 @@ const App = () => {
         <section className="mb-32">
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 text-blue-500 mb-6 font-bold text-xs tracking-widest uppercase">
-              <Terminal className="w-4 h-4" />
-              <span>Full Stack Engineer</span>
+              <span>Web Developer</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tighter leading-none">
-              I build{" "}
-              <span className="text-slate-500">high-performance backends</span>{" "}
-              in Go & sleek frontends in React.
+              I build <span className="text-slate-500">fast RESTful APIs</span>{" "}
+              & modern web applications.
             </h1>
             <p className="text-lg text-slate-400 mb-10 leading-relaxed font-sans max-w-2xl">
-              Junior Developer with 1+ year of experience. Currently focused on
-              building scalable architectures and learning challenging new
-              systems.
+              Web Developer with 1+ year of experience. Specialize in
+              Express.js, NestJS, and React/Next.js. Currently learning Go to
+              build even faster backends.
             </p>
             <div className="flex flex-wrap gap-4">
               <a
                 href="#projects"
                 className="px-6 py-3 bg-white text-black text-xs font-bold uppercase rounded-sm hover:bg-slate-200 transition-all flex items-center gap-2"
               >
-                Browse Projects <ChevronRight className="w-4 h-4" />
+                View Work <ChevronRight className="w-4 h-4" />
               </a>
               <a
                 href="mailto:pyaephyomg.ppm06@gmail.com"
                 className="px-6 py-3 border border-white/10 text-white text-xs font-bold uppercase rounded-sm hover:bg-white/5 transition-all"
               >
-                Get in touch
+                Hire Me
+              </a>
+              {/* Add this new button */}
+              <a
+                href={cvFile}
+                download="Pyae_Phyo_Maung_CV.pdf"
+                className="px-6 py-3 border border-white/10 text-white text-xs font-bold uppercase rounded-sm hover:bg-white/5 transition-all flex items-center gap-2"
+              >
+                Download CV
               </a>
             </div>
           </div>
@@ -347,13 +386,13 @@ const App = () => {
         {/* Technical Stack - Minimal Grid */}
         <section className="mb-32">
           <h2 className="text-xs font-bold text-slate-500 uppercase tracking-[0.3em] mb-12 flex items-center gap-4">
-            Technical Stack <span className="h-[1px] flex-1 bg-white/5"></span>
+            Technical Stack <span className="h-px flex-1 bg-white/5"></span>
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/5 border border-white/5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-px bg-white/5 border border-white/5">
             {skills.map((skill) => (
               <div
                 key={skill.name}
-                className="bg-[#0a0a0b] p-8 flex flex-col gap-4 group hover:bg-white/[0.02] transition-colors relative overflow-hidden"
+                className="bg-[#0a0a0b] p-8 flex flex-col gap-4 group hover:bg-white/2 transition-colors relative overflow-hidden"
               >
                 <div className="text-white opacity-40 group-hover:opacity-100 transition-opacity">
                   {skill.icon}
@@ -367,7 +406,7 @@ const App = () => {
                   </div>
                 </div>
                 {/* Hover glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
               </div>
             ))}
           </div>
@@ -376,13 +415,13 @@ const App = () => {
         {/* Projects - List Style */}
         <section id="projects" className="mb-32">
           <h2 className="text-xs font-bold text-slate-500 uppercase tracking-[0.3em] mb-12 flex items-center gap-4">
-            Production Work <span className="h-[1px] flex-1 bg-white/5"></span>
+            Production Work <span className="h-px flex-1 bg-white/5"></span>
           </h2>
           <div className="space-y-6">
             {projects.map((project, idx) => (
               <div
                 key={idx}
-                className="group relative border border-white/5 bg-white/[0.01] p-8 md:p-12 rounded-sm hover:border-white/20 transition-all"
+                className="group relative border border-white/5 bg-white/1 p-8 md:p-12 rounded-sm hover:border-white/20 transition-all"
               >
                 <div className="flex flex-col md:flex-row justify-between gap-8">
                   <div className="flex-1">
